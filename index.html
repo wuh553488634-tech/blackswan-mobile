@@ -81,12 +81,12 @@ body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;backgroun
 <body>
 
 <div class="section-label">Layer 1: Kline Live System (Port 8000)</div>
-<div id="klineInline" class="iframe-section" style="height:300px;overflow-y:auto;border:1px solid #2a3040;border-radius:8px;background:#111827;padding:12px;font-size:12px;color:#9ca3af"><div class="loading">Loading K-line data from cloud...</div></div>
+<iframe src="/proxy/kline/dashboard" class="iframe-section" scrolling="yes" style="height:800px;overflow-y:auto;border:none"></iframe>
 
 <div class="section-divider"></div>
 
 <div class="section-label">Layer 2: News Engine Admin Panel (Port 8777)</div>
-<div id="newsInline" class="iframe-section" style="height:400px;overflow-y:auto;border:1px solid #2a3040;border-radius:8px;background:#111827;padding:12px;font-size:12px;color:#9ca3af"><div class="loading">Loading news from cloud...</div></div>
+<iframe src="/proxy/news/admin" class="iframe-section" scrolling="yes" style="height:600px;overflow-y:auto;border:none"></iframe>
 
 <div class="section-divider"></div>
 
@@ -163,78 +163,9 @@ body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;backgroun
   </div>
 </div>
 
-<script>
-let qaHistory=[],MAX_HISTORY=20;
 
-function toggleSrc(el){el.parentElement.classList.toggle('off',!el.checked)}
-
-async function askQA(){
-  const q=document.getElementById('qaInput').value.trim();
-  if(!q)return;
-  const btn=document.getElementById('btnSend'),ab=document.getElementById('answerBody'),am=document.getElementById('answerMeta'),st=document.getElementById('qaStatus');
-  const body={question:q};
-  document.querySelectorAll('#srcKline input,#srcNews input,#srcExt input').forEach(cb=>body[cb.dataset.key]=cb.checked);
-  btn.disabled=true;btn.textContent='...';st.textContent='Analyzing...';st.style.color='var(--yl)';
-  ab.innerHTML='<div class="qa-loading"><div class="spinner"></div>DeepSeek AI analyzing with selected sources...</div>';am.textContent='';
-  const t0=Date.now();
-  try{
-    const r=await fetch('/api/qa/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    ab.innerHTML=renderMarkdown(d.answer);ab.scrollTop=0;
-    document.getElementById('answerContainer').scrollIntoView({behavior:'smooth'});
-    am.textContent=((Date.now()-t0)/1000).toFixed(1)+'s | '+d.answer.length+' chars | '+new Date().toLocaleTimeString('zh-CN');
-    st.textContent='Ready';st.style.color='var(--gr)';
-    qaHistory.unshift({question:q,answer:d.answer,time:new Date().toLocaleTimeString('zh-CN'),chars:d.answer.length});
-    if(qaHistory.length>MAX_HISTORY)qaHistory.pop();renderHistory();
-  }catch(e){
-    ab.innerHTML='<div class="qa-answer-placeholder"><div class="icon">X</div><div class="text">Error: '+escHtml(e.message)+'</div></div>';
-    st.textContent='Error';st.style.color='var(--rd)';
-  }
-  btn.disabled=false;btn.textContent='Send';
-}
-
-function clearQA(){
-  document.getElementById('qaInput').value='';
-  document.getElementById('answerBody').innerHTML='<div class="qa-answer-placeholder"><div class="icon">AI</div><div class="text">Enter your question</div><div class="hint">OKX WebSocket - OKX REST - 13 Indicators - News Engine - Black Swan Skill - DuckDuckGo - CoinGlass</div></div>';
-  document.getElementById('answerMeta').textContent='';
-  qaHistory = [];
-  renderHistory();
-}
-
-function renderHistory(){
-  const l=document.getElementById('qaHistoryList'),c=document.getElementById('qaHistory');
-  if(qaHistory.length===0){c.style.display='none';return}
-  c.style.display='block';
-  l.innerHTML=qaHistory.map((h,i)=>'<div class="qa-history-item" onclick="loadHistory('+i+')" title="'+escHtml(h.question)+'">'+h.time+' | '+h.chars+'c | '+escHtml(h.question.substring(0,80))+(h.question.length>80?'...':'')+'</div>').join('');
-}
-
-function loadHistory(i){const h=qaHistory[i];if(!h)return;document.getElementById('answerBody').innerHTML=renderMarkdown(h.answer);document.getElementById('answerMeta').textContent='History | '+h.time+' | '+h.chars+' chars';document.getElementById('answerContainer').scrollIntoView({behavior:'smooth'})}
-
-function renderMarkdown(t){
-  if(!t)return'';let h=escHtml(t);
-  h=h.replace(/```(\w*)\n([\s\S]*?)```/g,(m,lang,code)=>'<pre><code>'+code.trim()+'</code></pre>');
-  h=h.replace(/`([^`]+)`/g,'<code>$1</code>');
-  h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
-  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
-  h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
-  h=h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
-  h=h.replace(/^[*-] (.+)$/gm,'<li>$1</li>');
-  h=h.replace(/((?:<li>.*<\/li>\n?)+)/g,'<ul>$1</ul>');
-  h=h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
-  h=h.replace(/^---$/gm,'<hr>');
-  h=h.replace(/\n\n+/g,'</p><p>');
-  h='<p>'+h+'</p>';
-  h=h.replace(/<p>\s*<\/p>/g,'');h=h.replace(/<p><(h[123]|ul|ol|pre|blockquote|hr)/g,'<$1');h=h.replace(/<\/(h[123]|ul|ol|pre|blockquote)><\/p>/g,'</$1>');
-  return h
-}
-
-function escHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
-document.getElementById('qaStatus').textContent='Ready | '+new Date().toLocaleTimeString('zh-CN');
-</script>
 
 <script>
-(function(){
 var SB="https://blhzamrtazxoeibayipb.supabase.co/rest/v1";
 var SK="sb_publishable_xyrMuCN1UcUPcAOztYnQ3g_FioMlnB9";
 var H={"apikey":SK,"Authorization":"Bearer "+SK};
@@ -243,8 +174,8 @@ async function F(t,p){var r=await fetch(SB+"/"+t+"?"+p,{headers:H});return r.jso
 async function loadKline(){
   try{
     var k=await F("kline_1h","select=timestamp,open,high,low,close,volume&order=timestamp.desc&limit=24");
-    var d=document.getElementById("klineInline");
-    if(k.length){
+    var d=document.getElementById("newsInline");
+    if(k&&k.length){
        var rows=k.reverse().map(function(x){
          var pct=((x.close-x.open)/x.open*100).toFixed(1);
          var c=pct>=0?"#10b981":"#ef4444";
@@ -253,16 +184,16 @@ async function loadKline(){
            "<span>O:"+Number(x.open).toFixed(0)+" H:"+Number(x.high).toFixed(0)+" L:"+Number(x.low).toFixed(0)+"</span>"+
            "<span style=color:"+c+">C:"+Number(x.close).toFixed(0)+" ("+pct+"%)</span></div>";
        }).join("");
-       d.innerHTML="<div style=font-size:11px;color:#6b7280;margin-bottom:6px>1h K-line (cloud)</div>"+rows;
-    }else{d.innerHTML="<div class=loading>No K-line data</div>"}
-  }catch(e){}
+       d.innerHTML+="<div style=margin-top:10px;font-size:11px;color:#6b7280>1h K-line (from cloud)</div>"+rows;
+    }
+  }catch(e){console.log(e)}
 }
 
 async function loadNews(){
   try{
     var n=await F("news","select=tier,direction,category,score,summary,channel_name,received_timestamp&order=received_timestamp.desc&limit=30");
     var d=document.getElementById("newsInline");
-    if(n.length){
+    if(n&&n.length){
       var rows=n.map(function(x){
         var t=(x.tier||"t3").toLowerCase();
         var cat=x.category?"["+x.category+"] ":"";
@@ -275,14 +206,13 @@ async function loadNews(){
           cat+div.innerHTML+
           "<div style=font-size:9px;color:#6b7280;margin-top:2px>"+ts+" | "+(x.channel_name||"?")+sc+"</div></div>";
       }).join("");
-      d.innerHTML="<div style=font-size:11px;color:#6b7280;margin-bottom:6px>News (cloud) | "+n.length+" items</div>"+rows;
-    }else{d.innerHTML="<div class=loading>No news data</div>"}
-  }catch(e){}
+      d.innerHTML="<div style=font-size:11px;color:#6b7280;margin-bottom:6px>News (from cloud) | "+n.length+" items</div>"+rows;
+    }else{d.innerHTML="<div style=padding:20px;color:#6b7280>No news data</div>"}
+  }catch(e){console.log(e)}
 }
 
 loadKline();loadNews();
 setInterval(function(){loadKline();loadNews()},30000);
-})();
 </script>
 </body>
 </html>
