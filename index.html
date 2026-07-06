@@ -7,7 +7,7 @@
 <style>
 :root{--bg:#0a0e17;--bg2:#111827;--card:#1a1f2e;--border:#2a3040;--txt:#e5e7eb;--txt2:#9ca3af;--txt3:#6b7280;--gr:#10b981;--rd:#ef4444;--yl:#f59e0b;--bl:#3b82f6;--pr:#8b5cf6}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+html,body{height:100%;overflow:hidden}body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column}
 
 .header{background:linear-gradient(135deg,#1a1040,#0a1a30);border-bottom:2px solid var(--pr);padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
 .header h1{font-size:16px;font-weight:800;background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -33,7 +33,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .news-meta{font-size:9px;color:var(--txt3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
 
 /* TV */
-#panel-tv{display:none;flex-direction:column;height:calc(100vh - 100px)}
+#panel-tv{display:none;flex-direction:column;flex:1;min-height:0}
 #panel-tv.active{display:flex}
 .tv-market-bar{display:flex;gap:3px;flex-wrap:wrap;padding:6px 10px;overflow-x:auto;flex-shrink:0}
 .tv-mkt{padding:4px 8px;border-radius:4px;font-size:10px;cursor:pointer;background:var(--bg2);border:1px solid var(--border);color:var(--txt2);white-space:nowrap;transition:all .12s}
@@ -41,8 +41,8 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .tv-mkt.crypto{border-color:rgba(139,92,246,0.3)}
 .tv-mkt.stock{border-color:rgba(59,130,246,0.3)}
 .tv-mkt.commodity{border-color:rgba(245,158,11,0.3)}
-.tv-mkt.search{background:transparent;border:1px dashed var(--border);color:var(--txt3);font-style:italic}
-.tv-chart-wrapper{flex:1;margin:0 8px 8px;border-radius:8px;overflow:hidden;border:1px solid var(--border);min-height:0}
+.tv-mkt.search-btn{background:transparent;border:1px dashed var(--border);color:var(--txt3);font-style:italic}
+.tv-chart-wrapper{flex:1;margin:0 8px 8px;border-radius:8px;overflow:hidden;border:1px solid var(--border);min-height:0;position:relative}.tv-chart-wrapper>div{position:absolute;top:0;left:0;right:0;bottom:0}
 
 /* AI */
 #panel-ai{padding:0 10px}
@@ -108,18 +108,18 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <button class="tv-mkt stock" data-sym="NASDAQ:TSLA">TSLA</button>
     <button class="tv-mkt stock" data-sym="NASDAQ:MSFT">MSFT</button>
     <button class="tv-mkt stock" data-sym="NYSE:SPY">SPY</button>
-    <button class="tv-mkt stock" data-sym="NYSE:QQQ">QQQ</button>
+    <button class="tv-mkt stock" data-sym="NYSE:QQQ">QQQ</button><button class="tv-mkt search-btn" data-sym="SEARCH_US">US Search</button>
     <button class="tv-mkt stock" data-sym="SSE:000001">上证</button>
     <button class="tv-mkt stock" data-sym="SSE:600519">茅台</button>
     <button class="tv-mkt stock" data-sym="SZSE:300750">宁德</button>
     <button class="tv-mkt stock" data-sym="SSE:601318">平安</button>
-    <button class="tv-mkt stock" data-sym="KRX:KOSPI">KOSPI</button>
+    <button class="tv-mkt stock" data-sym="KRX:KOSPI">KOSPI</button><button class="tv-mkt stock" data-sym="HKEX:9988">Ali</button><button class="tv-mkt stock" data-sym="HKEX:0700">Tencent</button><button class="tv-mkt stock" data-sym="HKEX:1810">Xiaomi</button><button class="tv-mkt stock" data-sym="HKEX:9618">JD</button><button class="tv-mkt search-btn" data-sym="SEARCH_HK">HK Search</button>
     <button class="tv-mkt stock" data-sym="TSE:7203">丰田</button>
     <button class="tv-mkt commodity" data-sym="CME_MINI:ES1!">S&P期货</button>
     <button class="tv-mkt commodity" data-sym="NYMEX:CL1!">原油</button>
     <button class="tv-mkt commodity" data-sym="COMEX:GC1!">黄金</button>
     <button class="tv-mkt commodity" data-sym="COMEX:SI1!">白银</button>
-    <button class="tv-mkt search" data-sym="SEARCH">搜索...</button>
+    
   </div>
   <div class="tv-chart-wrapper" id="tvChartContainer"></div>
 </div>
@@ -231,16 +231,17 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('tvMarkets').addEventListener('click',function(e){
     if(e.target.classList.contains('tv-mkt')){
       var sym=e.target.dataset.sym;
-      if(sym==='SEARCH'){
-        var q=prompt('Enter TradingView symbol (e.g. SSE:600519, NASDAQ:TSLA, FX:EURUSD):',currentSymbol);
+      if(sym==='SEARCH_US'){
+        var q=prompt('US stock (e.g. NASDAQ:GOOGL, NYSE:BABA):',currentSymbol);
+        if(!q)return;sym=q.toUpperCase();addMktBtn(sym);
+      }else if(sym==='SEARCH_HK'){
+        var q=prompt('HK stock (e.g. HKEX:9988, HKEX:0700):',currentSymbol);
+        if(!q)return;sym=q.toUpperCase();addMktBtn(sym);
+      }else if(sym==='SEARCH'){
+        var q=prompt('Enter TradingView symbol:',currentSymbol);
         if(!q)return;
         sym=q.toUpperCase();
-        // Add as new button
-        var btn=document.createElement('button');
-        btn.className='tv-mkt stock';
-        btn.dataset.sym=sym;
-        btn.textContent=sym.split(':').pop().slice(0,8);
-        e.target.before(btn);
+        addMktBtn(sym);
       }
       document.querySelectorAll('.tv-mkt').forEach(function(b){b.classList.remove('active')});
       var target=e.target;
@@ -254,6 +255,13 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 });
+
+
+function addMktBtn(sym){
+  var btn=document.createElement('button');btn.className='tv-mkt stock';
+  btn.dataset.sym=sym;btn.textContent=sym.split(':').pop().slice(0,8);
+  var ref=document.querySelector('.tv-mkt.search-btn');if(ref)ref.before(btn);
+}
 
 async function loadSnapshot(){
   try{
