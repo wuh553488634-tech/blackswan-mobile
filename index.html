@@ -81,7 +81,7 @@ body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;backgroun
 <body>
 
 <div class="section-label">Layer 1: Kline Live System (Port 8000)</div>
-<iframe src="/proxy/kline/dashboard" class="iframe-section" scrolling="yes" style="height:800px;overflow-y:auto;border:none"></iframe>
+<div id="klineInline" style="height:300px;overflow-y:auto;border:1px solid #2a3040;border-radius:8px;background:#111827;padding:12px;font-size:12px;color:#9ca3af;margin-top:5px">Loading K-line data...</div>
 
 <div class="section-divider"></div>
 
@@ -174,7 +174,7 @@ async function F(t,p){var r=await fetch(SB+"/"+t+"?"+p,{headers:H});return r.jso
 async function loadKline(){
   try{
     var k=await F("kline_1h","select=timestamp,open,high,low,close,volume&order=timestamp.desc&limit=24");
-    var d=document.getElementById("newsInline");
+    var d=document.getElementById("klineInline");
     if(k&&k.length){
        var rows=k.reverse().map(function(x){
          var pct=((x.close-x.open)/x.open*100).toFixed(1);
@@ -184,7 +184,7 @@ async function loadKline(){
            "<span>O:"+Number(x.open).toFixed(0)+" H:"+Number(x.high).toFixed(0)+" L:"+Number(x.low).toFixed(0)+"</span>"+
            "<span style=color:"+c+">C:"+Number(x.close).toFixed(0)+" ("+pct+"%)</span></div>";
        }).join("");
-       d.innerHTML+="<div style=margin-top:10px;font-size:11px;color:#6b7280>1h K-line (from cloud)</div>"+rows;
+       d.innerHTML="<div style=margin-top:10px;font-size:11px;color:#6b7280>1h K-line (from cloud)</div>"+rows;
     }
   }catch(e){console.log(e)}
 }
