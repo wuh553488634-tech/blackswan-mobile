@@ -1,20 +1,236 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BlackSwan</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Segoe UI,PingFang SC,sans-serif;background:#0a0e17;color:#e5e7eb;padding:10px}.header{background:linear-gradient(135deg,#1a1040,#0a1a30);border:1px solid #8b5cf6;border-radius:10px;padding:10px 14px;margin-bottom:10px}.header h1{font-size:16px;color:#8b5cf6}.card{background:#111827;border:1px solid #2a3040;border-radius:8px;padding:10px;margin-bottom:8px}.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}.stat>div{background:#111827;border:1px solid #2a3040;border-radius:6px;padding:8px;text-align:center}.val{font-size:18px;font-weight:700;color:#10b981}.lbl{font-size:10px;color:#6b7280}.ai-input{display:flex;gap:6px;margin-bottom:8px}.ai-input input{flex:1;background:#1a1f2e;border:1px solid #2a3040;border-radius:8px;color:#e5e7eb;padding:10px 12px;font-size:14px}.ai-input input:focus{outline:none;border-color:#8b5cf6}.ai-input button{background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer}.ai-output{background:#111827;border:1px solid #2a3040;border-radius:8px;padding:10px;min-height:60px;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;max-height:350px;overflow-y:auto}.news-item{font-size:11px;padding:6px 0;border-bottom:1px solid #1a1f2e;line-height:1.5}.badge{padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;margin-right:4px}.t0{background:#ef4444;color:#fff}.t1{background:#f59e0b;color:#000}.t2{background:#3b82f6;color:#fff}.t3{background:#6b7280;color:#fff}.loading{text-align:center;padding:20px;color:#6b7280;font-size:12px}.meta{font-size:9px;color:#6b7280;margin-top:2px}</style></head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Swan - Unified Dashboard</title>
+<style>
+:root{--bg:#0a0e17;--bg2:#111827;--card:#1a1f2e;--border:#2a3040;--txt:#e5e7eb;--txt2:#9ca3af;--txt3:#6b7280;--gr:#10b981;--rd:#ef4444;--yl:#f59e0b;--bl:#3b82f6;--pr:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.section-divider{background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));height:3px;margin:0}
+.section-label{background:var(--bg2);padding:6px 16px;font-size:11px;color:var(--txt2);text-align:center;border-bottom:1px solid var(--border);letter-spacing:2px}
+.iframe-section{width:100%;border:none;display:block;overflow:hidden}
+.qa-container{width:100%;min-height:100vh;background:var(--bg);padding:16px;max-width:1600px;margin:0 auto}
+
+.qa-header{background:linear-gradient(135deg,#1a1040,#0a1a30);border:1px solid var(--pr);border-radius:12px;padding:16px 24px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.qa-header-icon{font-size:42px}
+.qa-header-info h1{font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.qa-header-info p{font-size:11px;color:var(--txt2);margin-top:2px}
+
+.qa-input-area{display:flex;gap:8px;margin-bottom:8px}
+.qa-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--txt);padding:12px 16px;font-size:15px;font-family:inherit;resize:none;min-height:50px}
+.qa-input:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 3px rgba(139,92,246,0.15)}
+.qa-input::placeholder{color:var(--txt3)}
+
+/* Source groups */
+.qa-sources-section{margin-bottom:10px}
+.qa-sources-title{font-size:10px;color:var(--txt3);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
+.qa-sources{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
+.qa-src{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--txt2);padding:3px 8px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:5px;cursor:pointer;user-select:none;transition:all .12s}
+.qa-src:hover{border-color:var(--pr);background:rgba(139,92,246,0.15)}
+.qa-src.off{opacity:0.35;border-color:var(--border);background:var(--bg2)}
+.qa-src input[type=checkbox]{accent-color:var(--pr);width:12px;height:12px}
+.qa-src .pipe{color:var(--pr);margin:0 2px;font-size:9px}
+
+.btn-send{background:linear-gradient(135deg,var(--pr),var(--bl));color:white;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-send:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(139,92,246,0.4)}
+.btn-send:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-clear{background:var(--card);color:var(--txt2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;cursor:pointer}
+.btn-clear:hover{border-color:var(--rd);color:var(--rd)}
+
+.qa-answer-container{background:var(--card);border:1px solid var(--border);border-radius:12px;min-height:400px;max-height:none;overflow-y:visible}
+.qa-answer-header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(139,92,246,0.05);border-radius:12px 12px 0 0}
+.qa-answer-title{font-size:13px;font-weight:700;color:var(--pr)}
+.qa-answer-meta{font-size:10px;color:var(--txt3)}
+.qa-answer-body{padding:24px 28px;font-size:15px;line-height:1.9;white-space:pre-wrap;word-break:break-word;color:var(--txt)}
+.qa-answer-body h1{font-size:22px;color:var(--pr);margin:16px 0 8px}
+.qa-answer-body h2{font-size:19px;color:var(--bl);margin:14px 0 6px}
+.qa-answer-body h3{font-size:16px;color:var(--gr);margin:12px 0 6px}
+.qa-answer-body strong{color:var(--yl)}
+.qa-answer-body code{background:rgba(139,92,246,0.15);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px}
+.qa-answer-body pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-size:13px}
+.qa-answer-body ul,.qa-answer-body ol{padding-left:24px;margin:8px 0}
+.qa-answer-body li{margin:6px 0}
+.qa-answer-body blockquote{border-left:3px solid var(--pr);padding-left:16px;margin:12px 0;color:var(--txt2)}
+
+.qa-answer-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:350px;color:var(--txt3)}
+.qa-answer-placeholder .icon{font-size:64px;margin-bottom:16px;opacity:0.5}
+.qa-answer-placeholder .text{font-size:15px;margin-bottom:8px}
+.qa-answer-placeholder .hint{font-size:12px;color:var(--txt3);max-width:750px;text-align:center;line-height:1.6}
+
+.qa-loading{display:flex;align-items:center;justify-content:center;gap:12px;padding:60px;color:var(--pr);font-size:15px}
+.qa-loading .spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--pr);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.qa-history{margin-top:14px}
+.qa-history-header{font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.qa-history-item{padding:6px 10px;margin-bottom:3px;border-radius:5px;cursor:pointer;font-size:11px;color:var(--txt2);background:var(--bg2);transition:all .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa-history-item:hover{background:rgba(139,92,246,0.1);color:var(--txt)}
+
+.status-line{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:6px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--gr)}
+.status-dot.err{background:var(--rd)}
+.status-text{font-size:9px;color:var(--txt3)}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
 <body>
-<div class=header><h1>BlackSwan</h1><p id=statusLine>Online</p></div>
-<div class=stat><div><div class=lbl>BTC</div><div class=val id=btcPrice>...</div></div><div><div class=lbl>News</div><div class=val id=newsTotal>...</div></div><div><div class=lbl>Alerts</div><div class=val style=color:#f59e0b id=alertCount>...</div></div></div>
-<div class=card><div style=font-size:12px;color:#8b5cf6;margin-bottom:6px>AI Q&A</div><div class=ai-input><input id=aiInput placeholder="Ask AI..."><button onclick=sendAI()>Send</button></div><div class=ai-output id=aiOutput>Enter your question</div></div>
-<div class=card><div style=font-size:12px;color:#8b5cf6;margin-bottom:6px>News Waterfall</div><div id=newsList><div class=loading>Loading news...</div></div></div>
+
+<div class="section-label">Layer 1: Kline Live System (Port 8000)</div>
+<iframe src="/proxy/kline/dashboard" class="iframe-section" scrolling="yes" style="height:800px;overflow-y:auto;border:none"></iframe>
+
+<div class="section-divider"></div>
+
+<div class="section-label">Layer 2: News Engine Admin Panel (Port 8777)</div>
+<iframe src="/proxy/news/admin" class="iframe-section" scrolling="yes" style="height:600px;overflow-y:auto;border:none"></iframe>
+
+<div class="section-divider"></div>
+
+<div class="section-label">Layer 3: AI Real-time Q&A</div>
+<div class="qa-container">
+  <div class="qa-header">
+    <div class="qa-header-icon">AI</div>
+    <div class="qa-header-info">
+      <h1>AI Real-time Q&A</h1>
+      <p>DeepSeek AI - All Data Sources - Independent Toggle Switches - No Word Limit</p>
+    </div>
+  </div>
+
+  <div class="qa-input-area">
+    <textarea class="qa-input" id="qaInput" placeholder="Ask anything... e.g. BTC analysis, RSI status, T0 news, historical patterns, liquidation risk..."
+              rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askQA();}"></textarea>
+    <button class="btn-send" id="btnSend" onclick="askQA()">Send</button>
+    <button class="btn-clear" onclick="clearQA()">Clear</button>
+  </div>
+
+  <!-- Data Source Toggles -->
+  <div class="qa-sources-section">
+    <div class="qa-sources-title">Kline Live System Pipeline (D:\black_swan\kline_live_system\)</div>
+    <div class="qa-sources" id="srcKline">
+      <label class="qa-src"><input type="checkbox" data-key="ws_kline" checked onchange="toggleSrc(this)"> OKX WebSocket K-lines (1m/15m/1h)</label>
+      <span class="pipe"></span>
+      <label class="qa-src"><input type="checkbox" data-key="okx_rest" checked onchange="toggleSrc(this)"> OKX REST (Funding/OI/Ticker/Depth)</label>
+      <span class="pipe"></span>
+      <label class="qa-src"><input type="checkbox" data-key="indicators" checked onchange="toggleSrc(this)"> 13 Indicators + 5 Conditions</label>
+      <span class="pipe"></span>
+      <label class="qa-src"><input type="checkbox" data-key="liquidation" checked onchange="toggleSrc(this)"> Liquidation Map</label>
+    </div>
+  </div>
+
+  <div class="qa-sources-section">
+    <div class="qa-sources-title">News Engine (C:\...\xue\news_engine\)</div>
+    <div class="qa-sources" id="srcNews">
+      <label class="qa-src"><input type="checkbox" data-key="rolling_news" checked onchange="toggleSrc(this)"> Rolling News (24h T0-T3)</label>
+      <label class="qa-src"><input type="checkbox" data-key="permanent_news" checked onchange="toggleSrc(this)"> Permanent Archive (T0)</label>
+    </div>
+  </div>
+
+  <div class="qa-sources-section">
+    <div class="qa-sources-title">External Sources</div>
+    <div class="qa-sources" id="srcExt">
+      <label class="qa-src"><input type="checkbox" data-key="historical" checked onchange="toggleSrc(this)"> Black Swan Skill (504 Events)</label>
+      <label class="qa-src"><input type="checkbox" data-key="web_search" onchange="toggleSrc(this)"> DuckDuckGo (Web Search)</label>
+      <label class="qa-src"><input type="checkbox" data-key="coinglass" checked onchange="toggleSrc(this)"> CoinGlass (Liquidation Heatmap)</label>
+    </div>
+  </div>
+
+  <div class="qa-answer-container" id="answerContainer">
+    <div class="qa-answer-header">
+      <span class="qa-answer-title">AI Answer</span>
+      <span class="qa-answer-meta" id="answerMeta"></span>
+    </div>
+    <div class="qa-answer-body" id="answerBody">
+      <div class="qa-answer-placeholder">
+        <div class="icon">AI</div>
+        <div class="text">Enter your question. All data sources auto-injected.</div>
+        <div class="hint">OKX WebSocket K-line - OKX REST API - 13 Technical Indicators - 5 Conditions - Liquidation Map - News Engine T0-T3 - Permanent Archive - Black Swan Skill (504 events) - DuckDuckGo Search - CoinGlass Heatmap</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-line">
+    <span class="status-dot" id="statusDot"></span>
+    <span class="status-text" id="qaStatus">Ready</span>
+  </div>
+
+  <div class="qa-history" id="qaHistory" style="display:none">
+    <div class="qa-history-header">History</div>
+    <div id="qaHistoryList"></div>
+  </div>
+</div>
+
 <script>
-var SB="https://blhzamrtazxoeibayipb.supabase.co/rest/v1";
-var SK="sb_publishable_xyrMuCN1UcUPcAOztYnQ3g_FioMlnB9";
-var DS="sk-21acf82adbdc4e13b816931902fb4793";
-var H={"apikey":SK,"Authorization":"Bearer "+SK};
-async function F(t,p){var r=await fetch(SB+"/"+t+"?"+p,{headers:H});return r.json()}
-function E(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML}
-async function sendAI(){var q=document.getElementById("aiInput").value.trim();if(!q)return;var o=document.getElementById("aiOutput");o.textContent="Thinking...";try{var r=await fetch("https://api.deepseek.com/v1/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+DS,"Content-Type":"application/json"},body:JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:"BlackSwan AI. Answer in Chinese. Under 200 chars."},{role:"user",content:q}],max_tokens:500,temperature:0.5})});var d=await r.json();o.textContent=d.choices?.[0]?.message?.content||"API error"}catch(e){o.textContent="Network error"}}
-async function L(){try{var s=await F("market_snapshot","select=price,rsi&order=created_at.desc&limit=1");if(s&&s[0]){document.getElementById("btcPrice").textContent="$"+Number(s[0].price||0).toFixed(0);document.getElementById("statusLine").textContent="BTC $"+Number(s[0].price||0).toFixed(0)+" | RSI:"+Number(s[0].rsi||0).toFixed(1)}var n=await F("news","select=tier,category,score,summary,channel_name,received_timestamp&order=received_timestamp.desc&limit=30");document.getElementById("newsTotal").textContent=n.length;document.getElementById("alertCount").textContent=n.filter(function(x){return x.tier==="T0"||x.tier==="T1"}).length;var c=document.getElementById("newsList");if(n.length){c.innerHTML=n.map(function(x){var t=(x.tier||"t3").toLowerCase();var ct=x.category?"["+x.category+"] ":"";var sc=x.score?" s:"+Number(x.score).toFixed(1):"";var tx=x.summary||"";var ts=x.received_timestamp?new Date(x.received_timestamp*1000).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"";return"<div class=news-item><span class=badge "+t+">"+(x.tier||"?")+"</span>"+ct+E(tx)+"<div class=meta>"+ts+" | "+(x.channel_name||"?")+sc+"</div></div>"}).join("")}else{c.innerHTML="<div class=loading>No news yet</div>"}document.getElementById("statusLine").textContent="Online | "+n.length+" news"}catch(e){document.getElementById("statusLine").textContent="Loading..."}}
-setInterval(L,30000);L();
-</script></body></html>
+let qaHistory=[],MAX_HISTORY=20;
+
+function toggleSrc(el){el.parentElement.classList.toggle('off',!el.checked)}
+
+async function askQA(){
+  const q=document.getElementById('qaInput').value.trim();
+  if(!q)return;
+  const btn=document.getElementById('btnSend'),ab=document.getElementById('answerBody'),am=document.getElementById('answerMeta'),st=document.getElementById('qaStatus');
+  const body={question:q};
+  document.querySelectorAll('#srcKline input,#srcNews input,#srcExt input').forEach(cb=>body[cb.dataset.key]=cb.checked);
+  btn.disabled=true;btn.textContent='...';st.textContent='Analyzing...';st.style.color='var(--yl)';
+  ab.innerHTML='<div class="qa-loading"><div class="spinner"></div>DeepSeek AI analyzing with selected sources...</div>';am.textContent='';
+  const t0=Date.now();
+  try{
+    const r=await fetch('/api/qa/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    ab.innerHTML=renderMarkdown(d.answer);ab.scrollTop=0;
+    document.getElementById('answerContainer').scrollIntoView({behavior:'smooth'});
+    am.textContent=((Date.now()-t0)/1000).toFixed(1)+'s | '+d.answer.length+' chars | '+new Date().toLocaleTimeString('zh-CN');
+    st.textContent='Ready';st.style.color='var(--gr)';
+    qaHistory.unshift({question:q,answer:d.answer,time:new Date().toLocaleTimeString('zh-CN'),chars:d.answer.length});
+    if(qaHistory.length>MAX_HISTORY)qaHistory.pop();renderHistory();
+  }catch(e){
+    ab.innerHTML='<div class="qa-answer-placeholder"><div class="icon">X</div><div class="text">Error: '+escHtml(e.message)+'</div></div>';
+    st.textContent='Error';st.style.color='var(--rd)';
+  }
+  btn.disabled=false;btn.textContent='Send';
+}
+
+function clearQA(){
+  document.getElementById('qaInput').value='';
+  document.getElementById('answerBody').innerHTML='<div class="qa-answer-placeholder"><div class="icon">AI</div><div class="text">Enter your question</div><div class="hint">OKX WebSocket - OKX REST - 13 Indicators - News Engine - Black Swan Skill - DuckDuckGo - CoinGlass</div></div>';
+  document.getElementById('answerMeta').textContent='';
+  qaHistory = [];
+  renderHistory();
+}
+
+function renderHistory(){
+  const l=document.getElementById('qaHistoryList'),c=document.getElementById('qaHistory');
+  if(qaHistory.length===0){c.style.display='none';return}
+  c.style.display='block';
+  l.innerHTML=qaHistory.map((h,i)=>'<div class="qa-history-item" onclick="loadHistory('+i+')" title="'+escHtml(h.question)+'">'+h.time+' | '+h.chars+'c | '+escHtml(h.question.substring(0,80))+(h.question.length>80?'...':'')+'</div>').join('');
+}
+
+function loadHistory(i){const h=qaHistory[i];if(!h)return;document.getElementById('answerBody').innerHTML=renderMarkdown(h.answer);document.getElementById('answerMeta').textContent='History | '+h.time+' | '+h.chars+' chars';document.getElementById('answerContainer').scrollIntoView({behavior:'smooth'})}
+
+function renderMarkdown(t){
+  if(!t)return'';let h=escHtml(t);
+  h=h.replace(/```(\w*)\n([\s\S]*?)```/g,(m,lang,code)=>'<pre><code>'+code.trim()+'</code></pre>');
+  h=h.replace(/`([^`]+)`/g,'<code>$1</code>');
+  h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  h=h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  h=h.replace(/^[*-] (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/((?:<li>.*<\/li>\n?)+)/g,'<ul>$1</ul>');
+  h=h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
+  h=h.replace(/^---$/gm,'<hr>');
+  h=h.replace(/\n\n+/g,'</p><p>');
+  h='<p>'+h+'</p>';
+  h=h.replace(/<p>\s*<\/p>/g,'');h=h.replace(/<p><(h[123]|ul|ol|pre|blockquote|hr)/g,'<$1');h=h.replace(/<\/(h[123]|ul|ol|pre|blockquote)><\/p>/g,'</$1>');
+  return h
+}
+
+function escHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+document.getElementById('qaStatus').textContent='Ready | '+new Date().toLocaleTimeString('zh-CN');
+</script>
+</body>
+</html>
