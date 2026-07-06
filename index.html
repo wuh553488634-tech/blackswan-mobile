@@ -2,217 +2,334 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Black Swan - Unified Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Black Swan Mobile</title>
 <style>
 :root{--bg:#0a0e17;--bg2:#111827;--card:#1a1f2e;--border:#2a3040;--txt:#e5e7eb;--txt2:#9ca3af;--txt3:#6b7280;--gr:#10b981;--rd:#ef4444;--yl:#f59e0b;--bl:#3b82f6;--pr:#8b5cf6}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-.section-divider{background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));height:3px;margin:0}
-.section-label{background:var(--bg2);padding:6px 16px;font-size:11px;color:var(--txt2);text-align:center;border-bottom:1px solid var(--border);letter-spacing:2px}
-.iframe-section{width:100%;border:none;display:block;overflow:hidden}
-.qa-container{width:100%;min-height:100vh;background:var(--bg);padding:16px;max-width:1600px;margin:0 auto}
+body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:20px}
 
-.qa-header{background:linear-gradient(135deg,#1a1040,#0a1a30);border:1px solid var(--pr);border-radius:12px;padding:16px 24px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
-.qa-header-icon{font-size:42px}
-.qa-header-info h1{font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.qa-header-info p{font-size:11px;color:var(--txt2);margin-top:2px}
+.header{background:linear-gradient(135deg,#1a1040,#0a1a30);border-bottom:2px solid var(--pr);padding:12px 16px;position:sticky;top:0;z-index:10}
+.header h1{font-size:17px;font-weight:800;background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header .sub{font-size:10px;color:var(--txt2);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
 
-.qa-input-area{display:flex;gap:8px;margin-bottom:8px}
-.qa-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--txt);padding:12px 16px;font-size:15px;font-family:inherit;resize:none;min-height:50px}
-.qa-input:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 3px rgba(139,92,246,0.15)}
-.qa-input::placeholder{color:var(--txt3)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:8px 10px}
+.stats>div{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center}
+.stats .val{font-size:18px;font-weight:700}
+.stats .lbl{font-size:10px;color:var(--txt3);margin-top:2px}
 
-/* Source groups */
-.qa-sources-section{margin-bottom:10px}
-.qa-sources-title{font-size:10px;color:var(--txt3);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
-.qa-sources{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
-.qa-src{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--txt2);padding:3px 8px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:5px;cursor:pointer;user-select:none;transition:all .12s}
-.qa-src:hover{border-color:var(--pr);background:rgba(139,92,246,0.15)}
-.qa-src.off{opacity:0.35;border-color:var(--border);background:var(--bg2)}
-.qa-src input[type=checkbox]{accent-color:var(--pr);width:12px;height:12px}
-.qa-src .pipe{color:var(--pr);margin:0 2px;font-size:9px}
+.tabs{display:flex;gap:3px;padding:0 10px 8px}
+.tab{flex:1;text-align:center;padding:7px 4px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:var(--bg2);border:1px solid var(--border);color:var(--txt2);transition:all .15s}
+.tab.active{background:var(--pr);border-color:var(--pr);color:#fff}
 
-.btn-send{background:linear-gradient(135deg,var(--pr),var(--bl));color:white;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap}
-.btn-send:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(139,92,246,0.4)}
-.btn-send:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.btn-clear{background:var(--card);color:var(--txt2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;cursor:pointer}
-.btn-clear:hover{border-color:var(--rd);color:var(--rd)}
+.panel{display:none;padding:0 10px}
+.panel.active{display:block}
 
-.qa-answer-container{background:var(--card);border:1px solid var(--border);border-radius:12px;min-height:400px;max-height:none;overflow-y:visible}
-.qa-answer-header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(139,92,246,0.05);border-radius:12px 12px 0 0}
-.qa-answer-title{font-size:13px;font-weight:700;color:var(--pr)}
-.qa-answer-meta{font-size:10px;color:var(--txt3)}
-.qa-answer-body{padding:24px 28px;font-size:15px;line-height:1.9;white-space:pre-wrap;word-break:break-word;color:var(--txt)}
-.qa-answer-body h1{font-size:22px;color:var(--pr);margin:16px 0 8px}
-.qa-answer-body h2{font-size:19px;color:var(--bl);margin:14px 0 6px}
-.qa-answer-body h3{font-size:16px;color:var(--gr);margin:12px 0 6px}
-.qa-answer-body strong{color:var(--yl)}
-.qa-answer-body code{background:rgba(139,92,246,0.15);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px}
-.qa-answer-body pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-size:13px}
-.qa-answer-body ul,.qa-answer-body ol{padding-left:24px;margin:8px 0}
-.qa-answer-body li{margin:6px 0}
-.qa-answer-body blockquote{border-left:3px solid var(--pr);padding-left:16px;margin:12px 0;color:var(--txt2)}
+.news-list{max-height:500px;overflow-y:auto}
+.news-item{padding:6px 0;border-bottom:1px solid rgba(42,48,64,0.5);font-size:11px;line-height:1.5}
+.news-item:last-child{border-bottom:none}
+.news-tier{padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;margin-right:4px;vertical-align:middle}
+.news-dir{padding:1px 4px;border-radius:2px;font-size:8px;margin-right:4px;vertical-align:middle}
+.news-cat{font-size:9px;color:var(--pr);margin-right:4px}
+.news-meta{font-size:9px;color:var(--txt3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
 
-.qa-answer-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:350px;color:var(--txt3)}
-.qa-answer-placeholder .icon{font-size:64px;margin-bottom:16px;opacity:0.5}
-.qa-answer-placeholder .text{font-size:15px;margin-bottom:8px}
-.qa-answer-placeholder .hint{font-size:12px;color:var(--txt3);max-width:750px;text-align:center;line-height:1.6}
+.ai-input-area{display:flex;gap:6px;margin-bottom:8px}
+.ai-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--txt);padding:10px 14px;font-size:14px;font-family:inherit;resize:none;min-height:44px}
+.ai-input:focus{outline:none;border-color:var(--pr)}
+.ai-input::placeholder{color:var(--txt3)}
+.btn{background:linear-gradient(135deg,var(--pr),var(--bl));color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:0.5}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--txt2)}
 
-.qa-loading{display:flex;align-items:center;justify-content:center;gap:12px;padding:60px;color:var(--pr);font-size:15px}
-.qa-loading .spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--pr);border-radius:50%;animation:spin 0.8s linear infinite}
+.ai-output{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;min-height:100px;max-height:400px;overflow-y:auto}
+.ai-output h1{font-size:17px;color:var(--pr);margin:12px 0 6px}
+.ai-output h2{font-size:15px;color:var(--bl);margin:10px 0 5px}
+.ai-output h3{font-size:13px;color:var(--gr);margin:8px 0 4px}
+.ai-output strong{color:var(--yl)}
+.ai-output code{background:rgba(139,92,246,0.15);padding:1px 5px;border-radius:3px;font-size:11px}
+
+.kline-table{width:100%;border-collapse:collapse;font-size:10px}
+.kline-table th{color:var(--txt3);font-weight:400;padding:3px 4px;text-align:right;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card)}
+.kline-table td{padding:3px 4px;text-align:right;border-bottom:1px solid rgba(42,48,64,0.3)}
+.kline-table tr:hover{background:rgba(139,92,246,0.05)}
+
+.loading{text-align:center;padding:30px;color:var(--txt3)}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--pr);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.qa-history{margin-top:14px}
-.qa-history-header{font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.qa-history-item{padding:6px 10px;margin-bottom:3px;border-radius:5px;cursor:pointer;font-size:11px;color:var(--txt2);background:var(--bg2);transition:all .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.qa-history-item:hover{background:rgba(139,92,246,0.1);color:var(--txt)}
-
-.status-line{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:6px}
-.status-dot{width:6px;height:6px;border-radius:50%;background:var(--gr)}
+.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
+.status-dot.ok{background:var(--gr)}
+.status-dot.warn{background:var(--yl)}
 .status-dot.err{background:var(--rd)}
-.status-text{font-size:9px;color:var(--txt3)}
 
-::-webkit-scrollbar{width:4px}
+.snap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
+.snap-item{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px}
+.snap-item .val{font-size:16px;font-weight:700}
+.snap-item .lbl{font-size:9px;color:var(--txt3)}
+
+::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 </style>
 </head>
 <body>
 
-<div class="section-label">Layer 1: Kline Live System (Port 8000)</div>
-<div id="klineInline" style="height:300px;overflow-y:auto;border:1px solid #2a3040;border-radius:8px;background:#111827;padding:12px;font-size:12px;color:#9ca3af;margin-top:5px">Loading K-line data...</div>
-
-<div class="section-divider"></div>
-
-<div class="section-label">Layer 2: News Engine Admin Panel (Port 8777)</div>
-<iframe src="/proxy/news/admin" class="iframe-section" scrolling="yes" style="height:600px;overflow-y:auto;border:none"></iframe>
-
-<div class="section-divider"></div>
-
-<div class="section-label">Layer 3: AI Real-time Q&A</div>
-<div class="qa-container">
-  <div class="qa-header">
-    <div class="qa-header-icon">AI</div>
-    <div class="qa-header-info">
-      <h1>AI Real-time Q&A</h1>
-      <p>DeepSeek AI - All Data Sources - Independent Toggle Switches - No Word Limit</p>
-    </div>
-  </div>
-
-  <div class="qa-input-area">
-    <textarea class="qa-input" id="qaInput" placeholder="Ask anything... e.g. BTC analysis, RSI status, T0 news, historical patterns, liquidation risk..."
-              rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askQA();}"></textarea>
-    <button class="btn-send" id="btnSend" onclick="askQA()">Send</button>
-    <button class="btn-clear" onclick="clearQA()">Clear</button>
-  </div>
-
-  <!-- Data Source Toggles -->
-  <div class="qa-sources-section">
-    <div class="qa-sources-title">Kline Live System Pipeline (D:\black_swan\kline_live_system\)</div>
-    <div class="qa-sources" id="srcKline">
-      <label class="qa-src"><input type="checkbox" data-key="ws_kline" checked onchange="toggleSrc(this)"> OKX WebSocket K-lines (1m/15m/1h)</label>
-      <span class="pipe"></span>
-      <label class="qa-src"><input type="checkbox" data-key="okx_rest" checked onchange="toggleSrc(this)"> OKX REST (Funding/OI/Ticker/Depth)</label>
-      <span class="pipe"></span>
-      <label class="qa-src"><input type="checkbox" data-key="indicators" checked onchange="toggleSrc(this)"> 13 Indicators + 5 Conditions</label>
-      <span class="pipe"></span>
-      <label class="qa-src"><input type="checkbox" data-key="liquidation" checked onchange="toggleSrc(this)"> Liquidation Map</label>
-    </div>
-  </div>
-
-  <div class="qa-sources-section">
-    <div class="qa-sources-title">News Engine (C:\...\xue\news_engine\)</div>
-    <div class="qa-sources" id="srcNews">
-      <label class="qa-src"><input type="checkbox" data-key="rolling_news" checked onchange="toggleSrc(this)"> Rolling News (24h T0-T3)</label>
-      <label class="qa-src"><input type="checkbox" data-key="permanent_news" checked onchange="toggleSrc(this)"> Permanent Archive (T0)</label>
-    </div>
-  </div>
-
-  <div class="qa-sources-section">
-    <div class="qa-sources-title">External Sources</div>
-    <div class="qa-sources" id="srcExt">
-      <label class="qa-src"><input type="checkbox" data-key="historical" checked onchange="toggleSrc(this)"> Black Swan Skill (504 Events)</label>
-      <label class="qa-src"><input type="checkbox" data-key="web_search" onchange="toggleSrc(this)"> DuckDuckGo (Web Search)</label>
-      <label class="qa-src"><input type="checkbox" data-key="coinglass" checked onchange="toggleSrc(this)"> CoinGlass (Liquidation Heatmap)</label>
-    </div>
-  </div>
-
-  <div class="qa-answer-container" id="answerContainer">
-    <div class="qa-answer-header">
-      <span class="qa-answer-title">AI Answer</span>
-      <span class="qa-answer-meta" id="answerMeta"></span>
-    </div>
-    <div class="qa-answer-body" id="answerBody">
-      <div class="qa-answer-placeholder">
-        <div class="icon">AI</div>
-        <div class="text">Enter your question. All data sources auto-injected.</div>
-        <div class="hint">OKX WebSocket K-line - OKX REST API - 13 Technical Indicators - 5 Conditions - Liquidation Map - News Engine T0-T3 - Permanent Archive - Black Swan Skill (504 events) - DuckDuckGo Search - CoinGlass Heatmap</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="status-line">
-    <span class="status-dot" id="statusDot"></span>
-    <span class="status-text" id="qaStatus">Ready</span>
-  </div>
-
-  <div class="qa-history" id="qaHistory" style="display:none">
-    <div class="qa-history-header">History</div>
-    <div id="qaHistoryList"></div>
+<div class="header">
+  <h1>Black Swan Mobile</h1>
+  <div class="sub">
+    <span id="headerPrice">BTC --</span>
+    <span id="headerNews">News --</span>
+    <span class="status-dot ok" id="syncDot"></span>
+    <span id="syncStatus">Syncing...</span>
   </div>
 </div>
 
+<div id="statsBar" class="stats">
+  <div><div class="val" id="stPrice" style="color:var(--gr)">--</div><div class="lbl">BTC/USD</div></div>
+  <div><div class="val" id="stNews" style="color:var(--pr)">--</div><div class="lbl">24h News</div></div>
+  <div><div class="val" id="stAlerts" style="color:var(--yl)">--</div><div class="lbl">T0+T1</div></div>
+</div>
 
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('news')">News Waterfall</div>
+  <div class="tab" onclick="switchTab('kline')">K-line</div>
+  <div class="tab" onclick="switchTab('snap')">Snapshot</div>
+  <div class="tab" onclick="switchTab('ai')">AI Q&A</div>
+</div>
+
+<div class="panel active" id="panel-news">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <span style="font-size:11px;color:var(--txt3)" id="newsLabel">Loading...</span>
+    <button class="btn btn-sm btn-outline" onclick="loadNews()">Refresh</button>
+  </div>
+  <div class="news-list" id="newsList"></div>
+</div>
+
+<div class="panel" id="panel-kline">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <span style="font-size:11px;color:var(--txt3)">1-Hour K-line (last 24 candles from cloud)</span>
+    <button class="btn btn-sm btn-outline" onclick="loadKline()">Refresh</button>
+  </div>
+  <div style="overflow-x:auto" id="klineContent"></div>
+</div>
+
+<div class="panel" id="panel-snap">
+  <div class="snap-grid" id="snapGrid"></div>
+</div>
+
+<div class="panel" id="panel-ai">
+  <div class="ai-input-area">
+    <textarea class="ai-input" id="aiInput" placeholder="Ask AI... e.g. BTC analysis, RSI, support/resistance, T0 news summary..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
+    <button class="btn" id="btnSend" onclick="askAI()">Send</button>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+    <label style="font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:3px"><input type="checkbox" checked onchange="aiSrc.ws_kline=this.checked">K-line</label>
+    <label style="font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:3px"><input type="checkbox" checked onchange="aiSrc.indicators=this.checked">Indicators</label>
+    <label style="font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:3px"><input type="checkbox" checked onchange="aiSrc.news=this.checked">News</label>
+    <label style="font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:3px"><input type="checkbox" checked onchange="aiSrc.liquidation=this.checked">Liquidation</label>
+    <button class="btn btn-sm btn-outline" onclick="clearAI()">Clear</button>
+  </div>
+  <div class="ai-output" id="aiOutput">
+    <div style="text-align:center;color:var(--txt3);padding:40px">
+      <div style="font-size:40px;margin-bottom:10px">AI</div>
+      <div style="font-size:13px">Ask any question. AI receives live K-line data, indicators, news, and liquidation maps as context.</div>
+      <div style="font-size:10px;margin-top:6px">Powered by DeepSeek</div>
+    </div>
+  </div>
+</div>
 
 <script>
-var SB="https://blhzamrtazxoeibayipb.supabase.co/rest/v1";
-var SK="sb_publishable_xyrMuCN1UcUPcAOztYnQ3g_FioMlnB9";
-var H={"apikey":SK,"Authorization":"Bearer "+SK};
-async function F(t,p){var r=await fetch(SB+"/"+t+"?"+p,{headers:H});return r.json()}
+var SUPABASE_URL = "https://blhzamrtazxoeibayipb.supabase.co";
+var SUPABASE_ANON = "sb_publishable_xyrMuCN1UcUPcAOztYnQ3g_FioMlnB9";
+var DEEPSEEK_URL = "https://blhzamrtazxoeibayipb.supabase.co/functions/v1/ai-proxy";
 
-async function loadKline(){
-  try{
-    var k=await F("kline_1h","select=timestamp,open,high,low,close,volume&order=timestamp.desc&limit=24");
-    var d=document.getElementById("klineInline");
-    if(k&&k.length){
-       var rows=k.reverse().map(function(x){
-         var pct=((x.close-x.open)/x.open*100).toFixed(1);
-         var c=pct>=0?"#10b981":"#ef4444";
-         return "<div style=display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #1a1f2e>"+
-           "<span style=color:#6b7280;font-size:10px>"+(x.timestamp||"").slice(5,16)+"</span>"+
-           "<span>O:"+Number(x.open).toFixed(0)+" H:"+Number(x.high).toFixed(0)+" L:"+Number(x.low).toFixed(0)+"</span>"+
-           "<span style=color:"+c+">C:"+Number(x.close).toFixed(0)+" ("+pct+"%)</span></div>";
-       }).join("");
-       d.innerHTML="<div style=margin-top:10px;font-size:11px;color:#6b7280>1h K-line (from cloud)</div>"+rows;
+var H = {"apikey":SUPABASE_ANON,"Authorization":"Bearer "+SUPABASE_ANON};
+var aiSrc = {ws_kline:true, indicators:true, news:true, liquidation:true};
+var lastSnapshot = null;
+var lastNews = [];
+var lastKline = [];
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  var idx = name==='news'?0:name==='kline'?1:name==='snap'?2:3;
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if (name==='kline') loadKline();
+  if (name==='news') loadNews();
+  if (name==='snap') loadSnapshot();
+}
+
+async function sfetch(path) {
+  var r = await fetch(SUPABASE_URL+"/rest/v1/"+path, {headers:H});
+  return r.json();
+}
+
+async function loadSnapshot() {
+  try {
+    var d = await sfetch("market_snapshot?select=*&order=id.desc&limit=1");
+    if (d && d.length) {
+      lastSnapshot = d[0];
+      var s = d[0];
+      var price = Number(s.price||0).toFixed(1);
+      var change = (s.price && s.ma5) ? ((s.price-s.ma5)/s.ma5*100).toFixed(2) : 0;
+      document.getElementById('stPrice').innerHTML = '$'+price;
+      document.getElementById('stPrice').style.color = change>=0?'#10b981':'#ef4444';
+      document.getElementById('headerPrice').textContent = 'BTC $'+price;
+      var items = [
+        {l:'Price',v:'$'+price, c:change>=0?'#10b981':'#ef4444'},
+        {l:'RSI(14)',v:Number(s.rsi||0).toFixed(1), c:s.rsi>70?'#ef4444':s.rsi<30?'#10b981':'#e5e7eb'},
+        {l:'BBW',v:Number(s.bbw||0).toFixed(6), c:'#3b82f6'},
+        {l:'ATR',v:Number(s.atr||0).toFixed(1), c:'#9ca3af'},
+        {l:'MA5',v:'$'+Number(s.ma5||0).toFixed(0), c:'#8b5cf6'},
+        {l:'MA20',v:'$'+Number(s.ma20||0).toFixed(0), c:'#8b5cf6'},
+        {l:'MA60',v:'$'+Number(s.ma60||0).toFixed(0), c:'#8b5cf6'},
+        {l:'Momentum',v:Number(s.momentum||0).toFixed(4), c:s.momentum>=0?'#10b981':'#ef4444'},
+        {l:'Vol Ratio',v:Number(s.volume_ratio||0).toFixed(2), c:'#9ca3af'},
+        {l:'Support',v:'$'+Number(s.support||0).toFixed(0), c:'#10b981'},
+        {l:'Resistance',v:'$'+Number(s.resistance||0).toFixed(0), c:'#ef4444'},
+        {l:'Funding',v:(Number(s.funding_rate||0)*100).toFixed(4)+'%', c:s.funding_rate>0?'#10b981':'#ef4444'},
+        {l:'OI',v:'$'+(Number(s.oi_usd||0)/1e6).toFixed(2)+'M', c:'#f59e0b'},
+        {l:'Long Liq',v:'$'+Number(s.long_liq_zone||0).toFixed(0), c:'#ef4444'},
+        {l:'Short Liq',v:'$'+Number(s.short_liq_zone||0).toFixed(0), c:'#10b981'}
+      ];
+      document.getElementById('snapGrid').innerHTML = items.map(function(i){
+        return '<div class="snap-item"><div class="val" style="color:'+i.c+'">'+i.v+'</div><div class="lbl">'+i.l+'</div></div>';
+      }).join('');
     }
-  }catch(e){console.log(e)}
+  } catch(e) { console.log(e); }
 }
 
-async function loadNews(){
-  try{
-    var n=await F("news","select=tier,direction,category,score,summary,channel_name,received_timestamp&order=received_timestamp.desc&limit=30");
-    var d=document.getElementById("newsInline");
-    if(n&&n.length){
-      var rows=n.map(function(x){
-        var t=(x.tier||"t3").toLowerCase();
-        var cat=x.category?"["+x.category+"] ":"";
-        var sc=x.score?" s:"+Number(x.score).toFixed(1):"";
-        var tx=x.summary||"";
-        var ts=x.received_timestamp?new Date(x.received_timestamp*1000).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
-        var div=document.createElement("div");div.textContent=tx||"";
-        return "<div style=padding:4px 0;border-bottom:1px solid #1a1f2e;font-size:11px;line-height:1.5>"+
-          "<span style=background:"+(t==="t0"?"#ef4444":t==="t1"?"#f59e0b":t==="t2"?"#3b82f6":"#6b7280")+";color:"+(t==="t1"?"#000":"#fff")+";padding:1px 4px;border-radius:2px;font-size:9px;margin-right:4px>"+(x.tier||"?")+"</span>"+
-          cat+div.innerHTML+
-          "<div style=font-size:9px;color:#6b7280;margin-top:2px>"+ts+" | "+(x.channel_name||"?")+sc+"</div></div>";
-      }).join("");
-      d.innerHTML="<div style=font-size:11px;color:#6b7280;margin-bottom:6px>News (from cloud) | "+n.length+" items</div>"+rows;
-    }else{d.innerHTML="<div style=padding:20px;color:#6b7280>No news data</div>"}
-  }catch(e){console.log(e)}
+async function loadNews() {
+  try {
+    var n = await sfetch("news?select=tier,direction,category,score,confidence,summary,channel_name,received_timestamp&order=received_timestamp.desc&limit=50");
+    if (n && n.length) {
+      lastNews = n;
+      var t0t1 = n.filter(function(x){return x.tier==='T0'||x.tier==='T1'}).length;
+      document.getElementById('stNews').textContent = n.length;
+      document.getElementById('stAlerts').textContent = t0t1;
+      document.getElementById('headerNews').textContent = n.length+' news | T0+T1: '+t0t1;
+      document.getElementById('newsLabel').textContent = 'Last 24h | '+n.length+' news ('+t0t1+' T0/T1)';
+      var rows = n.map(function(x){
+        var t = (x.tier||'T3').toLowerCase();
+        var tierColors = {t0:'#ef4444',t1:'#f59e0b',t2:'#3b82f6',t3:'#6b7280'};
+        var dirMap = {bullish:'Long',bearish:'Short',neutral:'-'};
+        var dir = dirMap[x.direction]||x.direction||'';
+        var dirColor = x.direction==='bullish'?'#10b981':x.direction==='bearish'?'#ef4444':'#9ca3af';
+        var cat = x.category ? '<span class="news-cat">['+x.category+']</span>' : '';
+        var sc = x.score!=null ? ' S:'+Number(x.score).toFixed(1) : '';
+        var cf = x.confidence!=null ? ' C:'+Number(x.confidence).toFixed(2) : '';
+        var ts = x.received_timestamp ? new Date(x.received_timestamp*1000).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+        return '<div class="news-item">'+
+          '<span class="news-tier" style="background:'+(tierColors[t]||'#6b7280')+';color:'+(t==='t1'?'#000':'#fff')+'">'+(x.tier||'?')+'</span>'+
+          (dir?'<span class="news-dir" style="background:'+dirColor+';color:#fff">'+dir+'</span>':'')+
+          cat+
+          '<span>'+(x.summary||x.channel_name||'')+'</span>'+
+          '<div class="news-meta">'+
+            '<span>'+ts+'</span>'+
+            '<span>'+((x.channel_name||'').slice(0,15))+'</span>'+
+            (sc?'<span style="color:var(--yl)">'+sc+'</span>':'')+
+            (cf?'<span style="color:var(--bl)">'+cf+'</span>':'')+
+          '</div></div>';
+      }).join('');
+      document.getElementById('newsList').innerHTML = rows;
+    } else {
+      document.getElementById('newsList').innerHTML = '<div class="loading">No news yet. Sync in progress...</div>';
+    }
+  } catch(e) { console.log(e); }
 }
 
-loadKline();loadNews();
-setInterval(function(){loadKline();loadNews()},30000);
+async function loadKline() {
+  try {
+    var k = await sfetch("kline_1h?select=timestamp,open,high,low,close,volume&order=timestamp.desc&limit=24");
+    if (k && k.length) {
+      lastKline = k.reverse();
+      var rows = lastKline.map(function(x){
+        var pct = ((x.close-x.open)/x.open*100).toFixed(2);
+        var c = pct>=0?'#10b981':'#ef4444';
+        return '<tr>'+
+          '<td style="color:var(--txt3)">'+(x.timestamp||'').slice(5,16)+'</td>'+
+          '<td>'+Number(x.open).toFixed(1)+'</td>'+
+          '<td>'+Number(x.high).toFixed(1)+'</td>'+
+          '<td>'+Number(x.low).toFixed(1)+'</td>'+
+          '<td style="color:'+c+'">'+Number(x.close).toFixed(1)+'</td>'+
+          '<td style="color:'+c+'">'+pct+'%</td>'+
+          '<td style="color:var(--txt3)">'+Number(x.volume||0).toFixed(0)+'</td></tr>';
+      }).join('');
+      document.getElementById('klineContent').innerHTML = 
+        '<table class="kline-table"><thead><tr><th>Time</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>Chg%</th><th>Vol</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    }
+  } catch(e) { console.log(e); }
+}
+
+function clearAI() { document.getElementById('aiOutput').innerHTML = '<div style="text-align:center;color:var(--txt3);padding:40px"><div style="font-size:40px;margin-bottom:10px">AI</div><div style="font-size:13px">Ready for questions.</div></div>'; }
+
+async function askAI() {
+  var q = document.getElementById('aiInput').value.trim();
+  if (!q) return;
+  var out = document.getElementById('aiOutput');
+  out.innerHTML = '<div class="loading"><div class="spinner"></div> Thinking...</div>';
+  document.getElementById('btnSend').disabled = true;
+
+  try {
+    var ctx = [];
+    if (aiSrc.indicators && lastSnapshot) {
+      var s = lastSnapshot;
+      ctx.push("[Market Snapshot] Price:$"+Number(s.price||0).toFixed(1)+" RSI:"+Number(s.rsi||0).toFixed(1)+" BBW:"+Number(s.bbw||0).toFixed(6)+" ATR:"+Number(s.atr||0).toFixed(1)+" MA5:$"+Number(s.ma5||0).toFixed(0)+" MA20:$"+Number(s.ma20||0).toFixed(0)+" MA60:$"+Number(s.ma60||0).toFixed(0)+" Momentum:"+Number(s.momentum||0).toFixed(4)+" VolRatio:"+Number(s.volume_ratio||0).toFixed(2)+" Support:$"+Number(s.support||0).toFixed(0)+" Resistance:$"+Number(s.resistance||0).toFixed(0)+" FundingRate:"+(Number(s.funding_rate||0)*100).toFixed(4)+"% OI:$"+Number(s.oi_usd||0)+" LongLiqZone:$"+Number(s.long_liq_zone||0)+" ShortLiqZone:$"+Number(s.short_liq_zone||0));
+    }
+    if (aiSrc.ws_kline && lastKline.length) {
+      ctx.push("[1h K-line (last "+lastKline.length+" candles)]");
+      lastKline.forEach(function(x){
+        ctx.push((x.timestamp||'').slice(0,19)+" O:"+x.open+" H:"+x.high+" L:"+x.low+" C:"+x.close+" V:"+x.volume);
+      });
+    }
+    if (aiSrc.news && lastNews.length) {
+      ctx.push("[News (last "+lastNews.length+" items)]");
+      lastNews.slice(0,30).forEach(function(x){
+        ctx.push("["+x.tier+"|"+(x.direction||'')+"|"+(x.category||'')+"] score:"+(x.score||0)+" conf:"+(x.confidence||0)+" | "+(x.summary||'')+" | "+(x.channel_name||''));
+      });
+    }
+    if (aiSrc.liquidation && lastSnapshot) {
+      ctx.push("[Liquidation] LongZone:$"+Number(lastSnapshot.long_liq_zone||0)+" ShortZone:$"+Number(lastSnapshot.short_liq_zone||0)+" FundingRate:"+(Number(lastSnapshot.funding_rate||0)*100).toFixed(4)+"% OI:$"+Number(lastSnapshot.oi_usd||0));
+    }
+
+    var systemMsg = "You are Black Swan AI, a comprehensive financial/crypto analyst. Provide thorough analysis based on real-time data. Answer in Chinese. Use the provided context (market snapshot, K-line data, news, liquidation maps) to give the most accurate answer. Be data-driven, cite specific numbers. You can analyze any financial topic - crypto, stocks, commodities, forex - based on the news data provided.";
+    var userMsg = "Context data:\n"+ctx.join("\n")+"\n\nQuestion: "+q;
+
+    var r = await fetch(DEEPSEEK_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'deepseek-chat',
+        messages:[
+          {role:'system',content:systemMsg},
+          {role:'user',content:userMsg}
+        ],
+        max_tokens:4096,
+        temperature:0.7
+      })
+    });
+    var j = await r.json();
+    if (j.choices && j.choices[0]) {
+      var answer = j.choices[0].message.content;
+      out.innerHTML = '<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">AI Answer | '+(j.usage?j.usage.total_tokens+' tokens':'')+' | '+new Date().toLocaleTimeString('zh-CN')+'</div>'+answer;
+    } else {
+      out.innerHTML = '<div style="color:var(--rd)">Error: '+(j.error?j.error.message:JSON.stringify(j))+'</div>';
+    }
+  } catch(e) {
+    out.innerHTML = '<div style="color:var(--rd)">Network error: '+e.message+'</div>';
+  }
+  document.getElementById('btnSend').disabled = false;
+}
+
+async function init() {
+  await Promise.all([loadSnapshot(), loadNews(), loadKline()]);
+  document.getElementById('syncStatus').textContent = 'Live';
+  document.getElementById('syncDot').classList.add('ok');
+}
+init();
+
+setInterval(function(){ loadSnapshot(); loadNews(); loadKline(); }, 30000);
 </script>
 </body>
 </html>
