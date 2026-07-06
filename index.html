@@ -7,26 +7,24 @@
 <style>
 :root{--bg:#0a0e17;--bg2:#111827;--card:#1a1f2e;--border:#2a3040;--txt:#e5e7eb;--txt2:#9ca3af;--txt3:#6b7280;--gr:#10b981;--rd:#ef4444;--yl:#f59e0b;--bl:#3b82f6;--pr:#8b5cf6}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:20px}
+body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
 
-.header{background:linear-gradient(135deg,#1a1040,#0a1a30);border-bottom:2px solid var(--pr);padding:12px 16px}
-.header h1{font-size:17px;font-weight:800;background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.header .sub{font-size:10px;color:var(--txt2);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.header{background:linear-gradient(135deg,#1a1040,#0a1a30);border-bottom:2px solid var(--pr);padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:16px;font-weight:800;background:linear-gradient(90deg,var(--pr),var(--bl),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header .sub{font-size:9px;color:var(--txt2);display:flex;gap:6px;align-items:center}
+.header .live{display:inline-flex;align-items:center;gap:3px;font-size:9px;color:var(--gr)}
+.header .live .dot{width:5px;height:5px;border-radius:50%;background:var(--gr)}
 
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:8px 10px}
-.stats>div{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center}
-.stats .val{font-size:18px;font-weight:700}
-.stats .lbl{font-size:10px;color:var(--txt3);margin-top:2px}
-
-.tabs{display:flex;gap:3px;padding:0 10px 8px}
-.tab{flex:1;text-align:center;padding:7px 4px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:var(--bg2);border:1px solid var(--border);color:var(--txt2);transition:all .15s}
+.tabs{display:flex;gap:3px;padding:6px 10px;background:var(--bg)}
+.tab{flex:1;text-align:center;padding:8px 4px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg2);border:1px solid var(--border);color:var(--txt2);transition:all .15s}
 .tab.active{background:var(--pr);border-color:var(--pr);color:#fff}
 
-.panel{display:none;padding:0 10px}
-.panel.active{display:block}
+.panel{display:none;flex:1;overflow-y:auto}
+.panel.active{display:flex;flex-direction:column}
 
 /* News */
-.news-list{max-height:500px;overflow-y:auto}
+#panel-news{padding:0 10px}
+.news-list{flex:1;overflow-y:auto}
 .news-item{padding:6px 0;border-bottom:1px solid rgba(42,48,64,0.5);font-size:11px;line-height:1.5}
 .news-item:last-child{border-bottom:none}
 .news-tier{padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;margin-right:4px;vertical-align:middle}
@@ -34,8 +32,21 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .news-cat{font-size:9px;color:var(--pr);margin-right:4px}
 .news-meta{font-size:9px;color:var(--txt3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
 
+/* TV */
+#panel-tv{display:none;flex-direction:column;height:calc(100vh - 100px)}
+#panel-tv.active{display:flex}
+.tv-market-bar{display:flex;gap:3px;flex-wrap:wrap;padding:6px 10px;overflow-x:auto;flex-shrink:0}
+.tv-mkt{padding:4px 8px;border-radius:4px;font-size:10px;cursor:pointer;background:var(--bg2);border:1px solid var(--border);color:var(--txt2);white-space:nowrap;transition:all .12s}
+.tv-mkt.active{background:var(--pr);border-color:var(--pr);color:#fff}
+.tv-mkt.crypto{border-color:rgba(139,92,246,0.3)}
+.tv-mkt.stock{border-color:rgba(59,130,246,0.3)}
+.tv-mkt.commodity{border-color:rgba(245,158,11,0.3)}
+.tv-mkt.search{background:transparent;border:1px dashed var(--border);color:var(--txt3);font-style:italic}
+.tv-chart-wrapper{flex:1;margin:0 8px 8px;border-radius:8px;overflow:hidden;border:1px solid var(--border);min-height:0}
+
 /* AI */
-.ai-input-area{display:flex;gap:6px;margin-bottom:8px}
+#panel-ai{padding:0 10px}
+.ai-input-area{display:flex;gap:6px;margin-bottom:6px}
 .ai-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--txt);padding:10px 14px;font-size:14px;font-family:inherit;resize:none;min-height:44px}
 .ai-input:focus{outline:none;border-color:var(--pr)}
 .btn{background:linear-gradient(135deg,var(--pr),var(--bl));color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer}
@@ -43,23 +54,15 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .btn-sm{padding:6px 12px;font-size:11px}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--txt2)}
 
-.ai-output{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;min-height:100px;max-height:400px;overflow-y:auto}
+.ai-output{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;overflow-y:auto}
 .ai-output h1{font-size:17px;color:var(--pr);margin:12px 0 6px}
 .ai-output h2{font-size:15px;color:var(--bl);margin:10px 0 5px}
 .ai-output h3{font-size:13px;color:var(--gr);margin:8px 0 4px}
 .ai-output strong{color:var(--yl)}
 
-/* TV */
-.tv-market-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
-.tv-mkt{padding:5px 10px;border-radius:5px;font-size:10px;cursor:pointer;background:var(--bg2);border:1px solid var(--border);color:var(--txt2);transition:all .15s}
-.tv-mkt.active{background:var(--pr);border-color:var(--pr);color:#fff}
-.tv-chart-wrapper{width:100%;height:450px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
-
 .loading{text-align:center;padding:30px;color:var(--txt3)}
 .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--pr);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
-.status-dot.ok{background:var(--gr)}
 
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:var(--bg)}
@@ -69,19 +72,11 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 <body>
 
 <div class="header">
-  <h1>Black Swan Mobile</h1>
-  <div class="sub">
-    <span id="headerPrice">BTC --</span>
-    <span id="headerNews">News --</span>
-    <span class="status-dot ok" id="syncDot"></span>
-    <span id="syncStatus">Live</span>
+  <div>
+    <h1>Black Swan Mobile</h1>
+    <div class="sub"><span id="headerInfo">Loading...</span></div>
   </div>
-</div>
-
-<div class="stats">
-  <div><div class="val" id="stPrice" style="color:var(--gr)">--</div><div class="lbl">BTC/USD</div></div>
-  <div><div class="val" id="stNews" style="color:var(--pr)">--</div><div class="lbl">24h News</div></div>
-  <div><div class="val" id="stAlerts" style="color:var(--yl)">--</div><div class="lbl">T0+T1</div></div>
+  <div class="live"><span class="dot"></span><span id="syncStatus">Live</span></div>
 </div>
 
 <div class="tabs">
@@ -92,7 +87,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 
 <!-- News Panel -->
 <div class="panel active" id="panel-news">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0 6px">
     <span style="font-size:11px;color:var(--txt3)" id="newsLabel">Loading...</span>
     <button class="btn btn-sm btn-outline" onclick="loadNews()">Refresh</button>
   </div>
@@ -102,19 +97,29 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 <!-- TradingView Panel -->
 <div class="panel" id="panel-tv">
   <div class="tv-market-bar" id="tvMarkets">
-    <button class="tv-mkt active" data-sym="BINANCE:BTCUSD">BTC</button>
-    <button class="tv-mkt" data-sym="BINANCE:ETHUSD">ETH</button>
-    <button class="tv-mkt" data-sym="BINANCE:SOLUSD">SOL</button>
-    <button class="tv-mkt" data-sym="BINANCE:DOGEUSD">DOGE</button>
-    <button class="tv-mkt" data-sym="NASDAQ:AAPL">AAPL</button>
-    <button class="tv-mkt" data-sym="NASDAQ:NVDA">NVDA</button>
-    <button class="tv-mkt" data-sym="NYSE:SPY">SPY</button>
-    <button class="tv-mkt" data-sym="SSE:000001">上证</button>
-    <button class="tv-mkt" data-sym="SZSE:399001">深证</button>
-    <button class="tv-mkt" data-sym="KRX:KOSPI">KOSPI</button>
-    <button class="tv-mkt" data-sym="CME_MINI:ES1!">S&P期货</button>
-    <button class="tv-mkt" data-sym="NYMEX:CL1!">原油</button>
-    <button class="tv-mkt" data-sym="COMEX:GC1!">黄金</button>
+    <button class="tv-mkt crypto active" data-sym="BINANCE:BTCUSD">BTC</button>
+    <button class="tv-mkt crypto" data-sym="BINANCE:ETHUSD">ETH</button>
+    <button class="tv-mkt crypto" data-sym="BINANCE:SOLUSD">SOL</button>
+    <button class="tv-mkt crypto" data-sym="BINANCE:DOGEUSD">DOGE</button>
+    <button class="tv-mkt crypto" data-sym="BINANCE:BNBUSD">BNB</button>
+    <button class="tv-mkt crypto" data-sym="BINANCE:XRPUSD">XRP</button>
+    <button class="tv-mkt stock" data-sym="NASDAQ:AAPL">AAPL</button>
+    <button class="tv-mkt stock" data-sym="NASDAQ:NVDA">NVDA</button>
+    <button class="tv-mkt stock" data-sym="NASDAQ:TSLA">TSLA</button>
+    <button class="tv-mkt stock" data-sym="NASDAQ:MSFT">MSFT</button>
+    <button class="tv-mkt stock" data-sym="NYSE:SPY">SPY</button>
+    <button class="tv-mkt stock" data-sym="NYSE:QQQ">QQQ</button>
+    <button class="tv-mkt stock" data-sym="SSE:000001">上证</button>
+    <button class="tv-mkt stock" data-sym="SSE:600519">茅台</button>
+    <button class="tv-mkt stock" data-sym="SZSE:300750">宁德</button>
+    <button class="tv-mkt stock" data-sym="SSE:601318">平安</button>
+    <button class="tv-mkt stock" data-sym="KRX:KOSPI">KOSPI</button>
+    <button class="tv-mkt stock" data-sym="TSE:7203">丰田</button>
+    <button class="tv-mkt commodity" data-sym="CME_MINI:ES1!">S&P期货</button>
+    <button class="tv-mkt commodity" data-sym="NYMEX:CL1!">原油</button>
+    <button class="tv-mkt commodity" data-sym="COMEX:GC1!">黄金</button>
+    <button class="tv-mkt commodity" data-sym="COMEX:SI1!">白银</button>
+    <button class="tv-mkt search" data-sym="SEARCH">搜索...</button>
   </div>
   <div class="tv-chart-wrapper" id="tvChartContainer"></div>
 </div>
@@ -125,7 +130,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <textarea class="ai-input" id="aiInput" placeholder="Ask AI... e.g. BTC analysis, RSI, news summary, liquidation risk..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>
     <button class="btn" id="btnSend" onclick="askAI()">Send</button>
   </div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
     <label style="font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:3px"><input type="checkbox" checked onchange="aiSrc.ws_kline=this.checked">K-line</label>
     <label style="font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:3px"><input type="checkbox" checked onchange="aiSrc.indicators=this.checked">Indicators</label>
     <label style="font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:3px"><input type="checkbox" checked onchange="aiSrc.news=this.checked">News</label>
@@ -148,7 +153,7 @@ var _k1="sk-21acf82adbdc4e13b";var _k2="816931902fb4793";var DEEPSEEK_KEY=_k1+_k
 var H={"apikey":SUPABASE_ANON,"Authorization":"Bearer "+SUPABASE_ANON};
 var aiSrc={ws_kline:true,indicators:true,news:true,liquidation:true};
 var lastSnapshot=null,lastNews=[],lastKline=[];
-var currentSymbol="BINANCE:BTCUSD";
+var currentSymbol="BINANCE:BTCUSD",tvWidget=null;
 
 function switchTab(name){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
@@ -157,7 +162,7 @@ function switchTab(name){
   document.querySelectorAll('.tab')[idx].classList.add('active');
   document.getElementById('panel-'+name).classList.add('active');
   if(name==='news')loadNews();
-  if(name==='tv')initTV();
+  if(name==='tv'&&!tvWidget)initTV();
 }
 
 async function sfetch(path){
@@ -171,9 +176,7 @@ async function loadNews(){
     if(n&&n.length){
       lastNews=n;
       var t0t1=n.filter(function(x){return x.tier==='T0'||x.tier==='T1'}).length;
-      document.getElementById('stNews').textContent=n.length;
-      document.getElementById('stAlerts').textContent=t0t1;
-      document.getElementById('headerNews').textContent=n.length+' news | T0+T1: '+t0t1;
+      document.getElementById('headerInfo').textContent='BTC $'+Number((lastSnapshot||{}).price||0).toFixed(1)+' | '+n.length+' news | T0+T1:'+t0t1;
       document.getElementById('newsLabel').textContent='Last 24h | '+n.length+' news ('+t0t1+' T0/T1)';
       var tierColors={t0:'#ef4444',t1:'#f59e0b',t2:'#3b82f6',t3:'#6b7280'};
       var dirMap={bullish:'Long',bearish:'Short',neutral:'-'};
@@ -200,13 +203,11 @@ async function loadNews(){
 
 function initTV(){
   var el=document.getElementById('tvChartContainer');
-  if(el.dataset.loaded===currentSymbol)return;
-  el.dataset.loaded=currentSymbol;
   el.innerHTML='<div class="loading"><div class="spinner"></div> Loading chart...</div>';
   var s=document.createElement('script');
   s.src='https://s3.tradingview.com/tv.js';
   s.onload=function(){
-    new TradingView.widget({
+    tvWidget=new TradingView.widget({
       "container_id":"tvChartContainer",
       "symbol":currentSymbol,
       "interval":"60",
@@ -222,20 +223,34 @@ function initTV(){
       "studies":["MASimple@tv-basicstudies","RSI@tv-basicstudies","BB@tv-basicstudies"]
     });
   };
-  document.getElementById('tvChartContainer').appendChild(s);
+  el.appendChild(s);
 }
 
-// Market switch buttons
+// Market buttons + search
 document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('tvMarkets').addEventListener('click',function(e){
     if(e.target.classList.contains('tv-mkt')){
+      var sym=e.target.dataset.sym;
+      if(sym==='SEARCH'){
+        var q=prompt('Enter TradingView symbol (e.g. SSE:600519, NASDAQ:TSLA, FX:EURUSD):',currentSymbol);
+        if(!q)return;
+        sym=q.toUpperCase();
+        // Add as new button
+        var btn=document.createElement('button');
+        btn.className='tv-mkt stock';
+        btn.dataset.sym=sym;
+        btn.textContent=sym.split(':').pop().slice(0,8);
+        e.target.before(btn);
+      }
       document.querySelectorAll('.tv-mkt').forEach(function(b){b.classList.remove('active')});
-      e.target.classList.add('active');
-      currentSymbol=e.target.dataset.sym;
-      var el=document.getElementById('tvChartContainer');
-      el.dataset.loaded='';
-      el.innerHTML='';
-      initTV();
+      var target=e.target;
+      if(target.dataset.sym!=='SEARCH')target.classList.add('active');
+      currentSymbol=sym;
+      if(tvWidget){
+        tvWidget.setSymbol(sym,'60',function(){console.log('Symbol changed to '+sym)});
+      }else{
+        initTV();
+      }
     }
   });
 });
@@ -243,14 +258,7 @@ document.addEventListener('DOMContentLoaded',function(){
 async function loadSnapshot(){
   try{
     var d=await sfetch("market_snapshot?select=*&order=id.desc&limit=1");
-    if(d&&d.length){
-      lastSnapshot=d[0];
-      var s=d[0],price=Number(s.price||0).toFixed(1);
-      var change=(s.price&&s.ma5)?((s.price-s.ma5)/s.ma5*100).toFixed(2):0;
-      document.getElementById('stPrice').innerHTML='$'+price;
-      document.getElementById('stPrice').style.color=change>=0?'var(--gr)':'var(--rd)';
-      document.getElementById('headerPrice').textContent='BTC $'+price;
-    }
+    if(d&&d.length){lastSnapshot=d[0];}
   }catch(e){}
 }
 
@@ -266,32 +274,24 @@ async function askAI(){
   document.getElementById('btnSend').disabled=true;
   try{
     var ctx=[];
-    if(aiSrc.indicators&&lastSnapshot){
+    if(lastSnapshot){
       var s=lastSnapshot;
-      ctx.push("[Market Snapshot] Price:$"+Number(s.price||0).toFixed(1)+" RSI:"+Number(s.rsi||0).toFixed(1)+" BBW:"+Number(s.bbw||0).toFixed(6)+" ATR:"+Number(s.atr||0).toFixed(1)+" MA5:$"+Number(s.ma5||0).toFixed(0)+" MA20:$"+Number(s.ma20||0).toFixed(0)+" MA60:$"+Number(s.ma60||0).toFixed(0)+" Momentum:"+Number(s.momentum||0).toFixed(4)+" VolRatio:"+Number(s.volume_ratio||0).toFixed(2)+" Support:$"+Number(s.support||0).toFixed(0)+" Resistance:$"+Number(s.resistance||0).toFixed(0)+" FundingRate:"+(Number(s.funding_rate||0)*100).toFixed(4)+"% OI:$"+Number(s.oi_usd||0)+" LongLiqZone:$"+Number(s.long_liq_zone||0)+" ShortLiqZone:$"+Number(s.short_liq_zone||0));
+      ctx.push("[Market Snapshot] Price:$"+Number(s.price||0).toFixed(1)+" RSI:"+Number(s.rsi||0).toFixed(1)+" BBW:"+Number(s.bbw||0).toFixed(6)+" ATR:"+Number(s.atr||0).toFixed(1)+" MA5:$"+Number(s.ma5||0).toFixed(0)+" MA20:$"+Number(s.ma20||0).toFixed(0)+" MA60:$"+Number(s.ma60||0).toFixed(0)+" Momentum:"+Number(s.momentum||0).toFixed(4)+" VolRatio:"+Number(s.volume_ratio||0).toFixed(2)+" Support:$"+Number(s.support||0).toFixed(0)+" Resistance:$"+Number(s.resistance||0).toFixed(0)+" Funding:"+(Number(s.funding_rate||0)*100).toFixed(4)+"% OI:$"+Number(s.oi_usd||0)+" LongLiq:$"+Number(s.long_liq_zone||0)+" ShortLiq:$"+Number(s.short_liq_zone||0));
     }
-    if(aiSrc.ws_kline&&lastKline.length){
-      ctx.push("[1h K-line (last "+lastKline.length+" candles)]");
-      lastKline.forEach(function(x){ctx.push((x.timestamp||'').slice(0,19)+" O:"+x.open+" H:"+x.high+" L:"+x.low+" C:"+x.close+" V:"+x.volume);});
+    if(lastNews.length){
+      ctx.push("[News ("+lastNews.length+" items)]");
+      lastNews.slice(0,25).forEach(function(x){ctx.push("["+x.tier+"|"+(x.direction||'')+"|"+(x.category||'')+"] s:"+(x.score||0)+" c:"+(x.confidence||0)+" "+(x.summary||''));});
     }
-    if(aiSrc.news&&lastNews.length){
-      ctx.push("[News (last "+lastNews.length+" items)]");
-      lastNews.slice(0,30).forEach(function(x){ctx.push("["+x.tier+"|"+(x.direction||'')+"|"+(x.category||'')+"] score:"+(x.score||0)+" conf:"+(x.confidence||0)+" | "+(x.summary||'')+" | "+(x.channel_name||''));});
-    }
-    if(aiSrc.liquidation&&lastSnapshot){
-      ctx.push("[Liquidation] LongZone:$"+Number(lastSnapshot.long_liq_zone||0)+" ShortZone:$"+Number(lastSnapshot.short_liq_zone||0)+" FundingRate:"+(Number(lastSnapshot.funding_rate||0)*100).toFixed(4)+"% OI:$"+Number(lastSnapshot.oi_usd||0));
-    }
-    var sys="You are Black Swan AI, a comprehensive financial analyst. Provide thorough analysis. Answer in Chinese. Use the provided context (market snapshot, K-line data, news, liquidation maps). Be data-driven, cite specific numbers. You can analyze crypto, stocks, commodities, forex, and any financial topic based on news data.";
-    var umsg="Context data:\n"+ctx.join("\n")+"\n\nQuestion: "+q;
+    var sys="You are Black Swan AI, a financial analyst. Answer in Chinese. Use provided data (snapshot, news). Be data-driven. Analyze crypto, stocks, commodities, forex based on news.";
+    var umsg="Data:\n"+ctx.join("\n")+"\n\nQ: "+q;
     var r=await fetch(DEEPSEEK_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_KEY},body:JSON.stringify({model:'deepseek-chat',messages:[{role:'system',content:sys},{role:'user',content:umsg}],max_tokens:4096,temperature:0.7})});
     var j=await r.json();
     if(j.choices&&j.choices[0]){
-      var ans=j.choices[0].message.content;
-      out.innerHTML='<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">AI Answer | '+(j.usage?j.usage.total_tokens+' tokens':'')+' | '+new Date().toLocaleTimeString('zh-CN')+'</div>'+ans;
+      out.innerHTML='<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">AI | '+(j.usage?j.usage.total_tokens+'tk':'')+' | '+new Date().toLocaleTimeString('zh-CN')+'</div>'+j.choices[0].message.content;
     }else{
-      out.innerHTML='<div style="color:var(--rd)">Error: '+(j.error?j.error.message:JSON.stringify(j))+'</div>';
+      out.innerHTML='<div style="color:var(--rd)">'+JSON.stringify(j.error||j)+'</div>';
     }
-  }catch(e){out.innerHTML='<div style="color:var(--rd)">Network error: '+e.message+'</div>';}
+  }catch(e){out.innerHTML='<div style="color:var(--rd)">'+e.message+'</div>';}
   document.getElementById('btnSend').disabled=false;
 }
 
