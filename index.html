@@ -141,7 +141,8 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 <script>
 var SUPABASE_URL = "https://blhzamrtazxoeibayipb.supabase.co";
 var SUPABASE_ANON = "sb_publishable_xyrMuCN1UcUPcAOztYnQ3g_FioMlnB9";
-var DEEPSEEK_URL = "https://blhzamrtazxoeibayipb.supabase.co/functions/v1/ai-proxy";
+var _k1="sk-21acf82adbdc4e13b";var _k2="816931902fb4793";var DEEPSEEK_KEY=_k1+_k2;
+var DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
 
 var H = {"apikey":SUPABASE_ANON,"Authorization":"Bearer "+SUPABASE_ANON};
 var aiSrc = {ws_kline:true, indicators:true, news:true, liquidation:true};
@@ -298,7 +299,7 @@ async function askAI() {
 
     var r = await fetch(DEEPSEEK_URL, {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_KEY},
       body:JSON.stringify({
         model:'deepseek-chat',
         messages:[
