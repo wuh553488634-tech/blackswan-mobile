@@ -81,12 +81,12 @@ body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;backgroun
 <body>
 
 <div class="section-label">Layer 1: Kline Live System (Port 8000)</div>
-<iframe src="/proxy/kline/dashboard" class="iframe-section" scrolling="yes" style="height:800px;overflow-y:auto;border:none"></iframe>
+<div id="klineInline" class="iframe-section" style="height:300px;overflow-y:auto;border:1px solid #2a3040;border-radius:8px;background:#111827;padding:12px;font-size:12px;color:#9ca3af"><div class="loading">Loading K-line data from cloud...</div></div>
 
 <div class="section-divider"></div>
 
 <div class="section-label">Layer 2: News Engine Admin Panel (Port 8777)</div>
-<iframe src="/proxy/news/admin" class="iframe-section" scrolling="yes" style="height:600px;overflow-y:auto;border:none"></iframe>
+<div id="newsInline" class="iframe-section" style="height:400px;overflow-y:auto;border:1px solid #2a3040;border-radius:8px;background:#111827;padding:12px;font-size:12px;color:#9ca3af"><div class="loading">Loading news from cloud...</div></div>
 
 <div class="section-divider"></div>
 
@@ -231,6 +231,58 @@ function renderMarkdown(t){
 
 function escHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
 document.getElementById('qaStatus').textContent='Ready | '+new Date().toLocaleTimeString('zh-CN');
+</script>
+
+<script>
+(function(){
+var SB="https://blhzamrtazxoeibayipb.supabase.co/rest/v1";
+var SK="sb_publishable_xyrMuCN1UcUPcAOztYnQ3g_FioMlnB9";
+var H={"apikey":SK,"Authorization":"Bearer "+SK};
+async function F(t,p){var r=await fetch(SB+"/"+t+"?"+p,{headers:H});return r.json()}
+
+async function loadKline(){
+  try{
+    var k=await F("kline_1h","select=timestamp,open,high,low,close,volume&order=timestamp.desc&limit=24");
+    var d=document.getElementById("klineInline");
+    if(k.length){
+       var rows=k.reverse().map(function(x){
+         var pct=((x.close-x.open)/x.open*100).toFixed(1);
+         var c=pct>=0?"#10b981":"#ef4444";
+         return "<div style=display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #1a1f2e>"+
+           "<span style=color:#6b7280;font-size:10px>"+(x.timestamp||"").slice(5,16)+"</span>"+
+           "<span>O:"+Number(x.open).toFixed(0)+" H:"+Number(x.high).toFixed(0)+" L:"+Number(x.low).toFixed(0)+"</span>"+
+           "<span style=color:"+c+">C:"+Number(x.close).toFixed(0)+" ("+pct+"%)</span></div>";
+       }).join("");
+       d.innerHTML="<div style=font-size:11px;color:#6b7280;margin-bottom:6px>1h K-line (cloud)</div>"+rows;
+    }else{d.innerHTML="<div class=loading>No K-line data</div>"}
+  }catch(e){}
+}
+
+async function loadNews(){
+  try{
+    var n=await F("news","select=tier,direction,category,score,summary,channel_name,received_timestamp&order=received_timestamp.desc&limit=30");
+    var d=document.getElementById("newsInline");
+    if(n.length){
+      var rows=n.map(function(x){
+        var t=(x.tier||"t3").toLowerCase();
+        var cat=x.category?"["+x.category+"] ":"";
+        var sc=x.score?" s:"+Number(x.score).toFixed(1):"";
+        var tx=x.summary||"";
+        var ts=x.received_timestamp?new Date(x.received_timestamp*1000).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+        var div=document.createElement("div");div.textContent=tx||"";
+        return "<div style=padding:4px 0;border-bottom:1px solid #1a1f2e;font-size:11px;line-height:1.5>"+
+          "<span style=background:"+(t==="t0"?"#ef4444":t==="t1"?"#f59e0b":t==="t2"?"#3b82f6":"#6b7280")+";color:"+(t==="t1"?"#000":"#fff")+";padding:1px 4px;border-radius:2px;font-size:9px;margin-right:4px>"+(x.tier||"?")+"</span>"+
+          cat+div.innerHTML+
+          "<div style=font-size:9px;color:#6b7280;margin-top:2px>"+ts+" | "+(x.channel_name||"?")+sc+"</div></div>";
+      }).join("");
+      d.innerHTML="<div style=font-size:11px;color:#6b7280;margin-bottom:6px>News (cloud) | "+n.length+" items</div>"+rows;
+    }else{d.innerHTML="<div class=loading>No news data</div>"}
+  }catch(e){}
+}
+
+loadKline();loadNews();
+setInterval(function(){loadKline();loadNews()},30000);
+})();
 </script>
 </body>
 </html>
